@@ -4,17 +4,37 @@
  */
 package projectpborestoran;
 
+import javax.swing.JOptionPane;
+import javax.swing.table.DefaultTableModel;
+
+import java.sql.ResultSet;
+import java.sql.Statement;
+import java.sql.Connection;
+
 /**
  *
  * @author ASUS Vivobook
  */
 public class RiwayatOrder extends javax.swing.JFrame {
+    
+    DefaultTableModel modelRiwayatOrder;
 
-    /**
-     * Creates new form Pelanggan
-     */
+
+    
     public RiwayatOrder() {
         initComponents();
+        modelRiwayatOrder = new DefaultTableModel(
+        new Object[][] {},
+        new String[] { "Order ID", "Customer", "Tanggal", "Total" }
+        ) {
+        @Override
+         public boolean isCellEditable(int row, int col) {
+        return false;
+        }
+        };
+        tblRiwayatOrder.setModel(modelRiwayatOrder);
+           loadRiwayatOrder();
+
     }
 
     /**
@@ -28,21 +48,11 @@ public class RiwayatOrder extends javax.swing.JFrame {
 
         jLabel1 = new javax.swing.JLabel();
         jLabel2 = new javax.swing.JLabel();
-        jLabel4 = new javax.swing.JLabel();
-        jLabel5 = new javax.swing.JLabel();
-        jLabel6 = new javax.swing.JLabel();
-        jLabel8 = new javax.swing.JLabel();
         jLabel9 = new javax.swing.JLabel();
-        jLabel10 = new javax.swing.JLabel();
-        jLabel12 = new javax.swing.JLabel();
-        jLabel13 = new javax.swing.JLabel();
         jButton1 = new javax.swing.JButton();
-        jLabel3 = new javax.swing.JLabel();
-        jLabel7 = new javax.swing.JLabel();
-        jLabel14 = new javax.swing.JLabel();
-        jLabel15 = new javax.swing.JLabel();
-        jLabel16 = new javax.swing.JLabel();
-        jLabel17 = new javax.swing.JLabel();
+        jScrollPane1 = new javax.swing.JScrollPane();
+        tblRiwayatOrder = new javax.swing.JTable();
+        btnLihatDetail = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
@@ -50,21 +60,7 @@ public class RiwayatOrder extends javax.swing.JFrame {
         jLabel1.setText("Restoran ASIK");
 
         jLabel2.setFont(new java.awt.Font("Maiandra GD", 1, 14)); // NOI18N
-        jLabel2.setText("Riwayat Pesanan Anda");
-
-        jLabel4.setText("Tanggal");
-
-        jLabel5.setText("Menu Pemesanan ");
-
-        jLabel6.setText("Total");
-
-        jLabel8.setText("2025 - 05 - 15 ");
-
-        jLabel10.setText("2025 - 05 - 14");
-
-        jLabel12.setText("Rp. 20.000-,");
-
-        jLabel13.setText("Rp. 40.000-,");
+        jLabel2.setText("Riwayat Order");
 
         jButton1.setText("Kembali ke Beranda");
         jButton1.addActionListener(new java.awt.event.ActionListener() {
@@ -73,54 +69,46 @@ public class RiwayatOrder extends javax.swing.JFrame {
             }
         });
 
-        jLabel3.setText("Nasi Goreng x1");
+        tblRiwayatOrder.setModel(new javax.swing.table.DefaultTableModel(
+            new Object [][] {
+                {null, null, null, null},
+                {null, null, null, null},
+                {null, null, null, null},
+                {null, null, null, null}
+            },
+            new String [] {
+                "Title 1", "Title 2", "Title 3", "Title 4"
+            }
+        ));
+        jScrollPane1.setViewportView(tblRiwayatOrder);
 
-        jLabel7.setText("Es Teh Manis x4");
-
-        jLabel14.setText("Soto Ayam x2");
-
-        jLabel15.setText("Sate Ayam x3");
-
-        jLabel16.setText("Rp. 50.000-,");
-
-        jLabel17.setText("Rp. 70.000-,");
+        btnLihatDetail.setText("lihat detail");
+        btnLihatDetail.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnLihatDetailActionPerformed(evt);
+            }
+        });
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(layout.createSequentialGroup()
-                .addGap(18, 18, 18)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
-                    .addGroup(layout.createSequentialGroup()
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
-                            .addGroup(layout.createSequentialGroup()
-                                .addComponent(jLabel9, javax.swing.GroupLayout.PREFERRED_SIZE, 79, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                .addGap(359, 359, 359))
-                            .addGroup(javax.swing.GroupLayout.Alignment.LEADING, layout.createSequentialGroup()
-                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                    .addComponent(jLabel8)
-                                    .addComponent(jLabel4)
-                                    .addComponent(jLabel10, javax.swing.GroupLayout.Alignment.TRAILING))
-                                .addGap(113, 113, 113)
-                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                    .addComponent(jLabel3)
-                                    .addComponent(jLabel7)
-                                    .addComponent(jLabel5)
-                                    .addComponent(jLabel14)
-                                    .addComponent(jLabel15))
-                                .addGap(118, 118, 118)
-                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                    .addComponent(jLabel12)
-                                    .addComponent(jLabel6)
-                                    .addComponent(jLabel13)
-                                    .addComponent(jLabel16)
-                                    .addComponent(jLabel17)
-                                    .addComponent(jButton1))))
-                        .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-                    .addGroup(layout.createSequentialGroup()
-                        .addComponent(jLabel2)
-                        .addGap(666, 666, 666))))
+            .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
+                    .addGap(18, 18, 18)
+                    .addComponent(jLabel2)
+                    .addGap(666, 666, 666))
+                .addGroup(layout.createSequentialGroup()
+                    .addGap(89, 89, 89)
+                    .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
+                        .addGroup(layout.createSequentialGroup()
+                            .addComponent(jButton1)
+                            .addGap(18, 18, 18)
+                            .addComponent(jLabel9, javax.swing.GroupLayout.PREFERRED_SIZE, 79, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addGap(142, 142, 142)
+                            .addComponent(btnLihatDetail))
+                        .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addContainerGap(282, Short.MAX_VALUE)))
             .addGroup(layout.createSequentialGroup()
                 .addGap(260, 260, 260)
                 .addComponent(jLabel1, javax.swing.GroupLayout.PREFERRED_SIZE, 165, javax.swing.GroupLayout.PREFERRED_SIZE))
@@ -132,43 +120,65 @@ public class RiwayatOrder extends javax.swing.JFrame {
                 .addComponent(jLabel1)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addComponent(jLabel2)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(jLabel4)
-                    .addComponent(jLabel6)
-                    .addComponent(jLabel5))
                 .addGap(18, 18, 18)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(jLabel12)
-                    .addComponent(jLabel8)
-                    .addComponent(jLabel3))
-                .addGap(18, 18, 18)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(jLabel7)
-                    .addComponent(jLabel13))
-                .addGap(30, 30, 30)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(jLabel16)
-                    .addComponent(jLabel14)
-                    .addComponent(jLabel10))
-                .addGap(18, 18, 18)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(jLabel17)
-                    .addComponent(jLabel15))
-                .addGap(31, 31, 31)
-                .addComponent(jButton1)
-                .addGap(234, 234, 234)
-                .addComponent(jLabel9)
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(layout.createSequentialGroup()
+                        .addGap(44, 44, 44)
+                        .addComponent(jLabel9)
+                        .addContainerGap())
+                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        .addComponent(jButton1))))
+            .addGroup(layout.createSequentialGroup()
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addComponent(btnLihatDetail))
         );
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
 
     private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
-        // TODO add your handling code here:
+       new BerandaAdmin().setVisible(true);
+       dispose();
     }//GEN-LAST:event_jButton1ActionPerformed
 
+    private void btnLihatDetailActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnLihatDetailActionPerformed
+        // TODO add your handling code here:
+         int selectedRow = tblRiwayatOrder.getSelectedRow();
+    if (selectedRow != -1) {
+        int orderId = (int) modelRiwayatOrder.getValueAt(selectedRow, 0);
+        OrderDetail detailFrame = new OrderDetail(orderId); // kirim orderId ke constructor
+        detailFrame.setVisible(true);
+    } else {
+        JOptionPane.showMessageDialog(this, "Pilih order yang ingin dilihat detailnya!");
+    }
+    }//GEN-LAST:event_btnLihatDetailActionPerformed
+
+    
+    private void loadRiwayatOrder() {
+    modelRiwayatOrder.setRowCount(0);
+    try {
+        Connection conn = koneksi.getConnection();
+        String sql = "SELECT o.order_id, c.name AS customer, o.order_date, o.total " +
+                     "FROM orders o JOIN customers c ON o.customer_id = c.customer_id " +
+                     "ORDER BY o.order_date DESC";
+        Statement st = conn.createStatement();
+        ResultSet rs = st.executeQuery(sql);
+        while (rs.next()) {
+            modelRiwayatOrder.addRow(new Object[]{
+                rs.getInt("order_id"),
+                rs.getString("customer"),
+                rs.getString("order_date"),
+                rs.getInt("total")
+            });
+        }
+    } catch (Exception e) {
+        JOptionPane.showMessageDialog(this, "Gagal load riwayat order: " + e.getMessage());
+    }
+}
+
+    
     /**
      * @param args the command line arguments
      */
@@ -208,22 +218,12 @@ public class RiwayatOrder extends javax.swing.JFrame {
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JButton btnLihatDetail;
     private javax.swing.JButton jButton1;
     private javax.swing.JLabel jLabel1;
-    private javax.swing.JLabel jLabel10;
-    private javax.swing.JLabel jLabel12;
-    private javax.swing.JLabel jLabel13;
-    private javax.swing.JLabel jLabel14;
-    private javax.swing.JLabel jLabel15;
-    private javax.swing.JLabel jLabel16;
-    private javax.swing.JLabel jLabel17;
     private javax.swing.JLabel jLabel2;
-    private javax.swing.JLabel jLabel3;
-    private javax.swing.JLabel jLabel4;
-    private javax.swing.JLabel jLabel5;
-    private javax.swing.JLabel jLabel6;
-    private javax.swing.JLabel jLabel7;
-    private javax.swing.JLabel jLabel8;
     private javax.swing.JLabel jLabel9;
+    private javax.swing.JScrollPane jScrollPane1;
+    private javax.swing.JTable tblRiwayatOrder;
     // End of variables declaration//GEN-END:variables
 }

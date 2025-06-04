@@ -9,6 +9,9 @@ import java.sql.Connection;
 import java.sql.Statement;
 import java.sql.ResultSet;
 import java.sql.PreparedStatement;
+import java.util.List;
+import java.util.ArrayList;
+
 
 
 /**
@@ -71,6 +74,7 @@ public class Order extends javax.swing.JFrame {
         tblMenu = new javax.swing.JTable();
         btnReset = new javax.swing.JButton();
         lblTotal = new javax.swing.JLabel();
+        tblTambahCust = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
@@ -85,6 +89,11 @@ public class Order extends javax.swing.JFrame {
         });
 
         btnKembali.setText("Kembali");
+        btnKembali.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnKembaliActionPerformed(evt);
+            }
+        });
 
         jLabel2.setText("Customer :");
 
@@ -112,6 +121,13 @@ public class Order extends javax.swing.JFrame {
 
         lblTotal.setText("Total: ");
 
+        tblTambahCust.setText("Tambah Customer");
+        tblTambahCust.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                tblTambahCustActionPerformed(evt);
+            }
+        });
+
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
@@ -138,8 +154,10 @@ public class Order extends javax.swing.JFrame {
                         .addGap(36, 36, 36)
                         .addComponent(btnReset)
                         .addGap(26, 26, 26)
-                        .addComponent(btnKembali)))
-                .addContainerGap(311, Short.MAX_VALUE))
+                        .addComponent(btnKembali)
+                        .addGap(18, 18, 18)
+                        .addComponent(tblTambahCust)))
+                .addContainerGap(60, Short.MAX_VALUE))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -160,7 +178,8 @@ public class Order extends javax.swing.JFrame {
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(btnSimpan)
                     .addComponent(btnKembali)
-                    .addComponent(btnReset))
+                    .addComponent(btnReset)
+                    .addComponent(tblTambahCust))
                 .addContainerGap(88, Short.MAX_VALUE))
         );
 
@@ -176,6 +195,15 @@ public class Order extends javax.swing.JFrame {
         // TODO add your handling code here:
         resetForm();
     }//GEN-LAST:event_btnResetActionPerformed
+
+    private void tblTambahCustActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_tblTambahCustActionPerformed
+       new TambahCustomer().setVisible(true);
+    }//GEN-LAST:event_tblTambahCustActionPerformed
+
+    private void btnKembaliActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnKembaliActionPerformed
+        new BerandaAdmin().setVisible(true);
+        dispose();
+    }//GEN-LAST:event_btnKembaliActionPerformed
 
     
     private void hitungTotal() {
@@ -227,6 +255,7 @@ public class Order extends javax.swing.JFrame {
     }
 
     int total = 0;
+    List<OrderItem> orderList = new ArrayList<>();
     for (int i = 0; i < modelMenu.getRowCount(); i++) {
         int harga = Integer.parseInt(modelMenu.getValueAt(i, 2).toString());
         int jumlah = 0;
@@ -234,7 +263,13 @@ public class Order extends javax.swing.JFrame {
         if (val != null && !val.toString().isEmpty()) {
             try { jumlah = Integer.parseInt(val.toString()); } catch (Exception ex) { jumlah = 0; }
         }
-        total += harga * jumlah;
+        if (jumlah > 0) {
+            int id = Integer.parseInt(modelMenu.getValueAt(i, 0).toString());
+            String nama = modelMenu.getValueAt(i, 1).toString();
+            String kategori = modelMenu.getValueAt(i, 3).toString();
+            orderList.add(new OrderItem(id, nama, harga, kategori, jumlah));
+            total += harga * jumlah;
+        }
     }
 
     if (total == 0) {
@@ -242,45 +277,14 @@ public class Order extends javax.swing.JFrame {
         return;
     }
 
-    // Ambil customer id
     String selected = cmbCustomer.getSelectedItem().toString();
     int customerId = Integer.parseInt(selected.split(" - ")[0]);
-    
-    try {
-        Connection conn = koneksi.getConnection();
-        // 1. Insert orders
-        String sqlOrder = "INSERT INTO orders (customer_id, order_date, total) VALUES (?, NOW(), ?)";
-        PreparedStatement pstOrder = conn.prepareStatement(sqlOrder, java.sql.Statement.RETURN_GENERATED_KEYS);
-        pstOrder.setInt(1, customerId);
-        pstOrder.setInt(2, total);
-        pstOrder.executeUpdate();
-        ResultSet rs = pstOrder.getGeneratedKeys();
-        int orderId = 0;
-        if (rs.next()) orderId = rs.getInt(1);
-        pstOrder.close();
+    String customerName = selected.substring(selected.indexOf('-') + 2);
 
-        // 2. Insert orderdetails
-        String sqlDetail = "INSERT INTO orderdetails (order_id, item_id, quantity) VALUES (?, ?, ?)";
-        PreparedStatement pstDetail = conn.prepareStatement(sqlDetail);
-        for (int i = 0; i < modelMenu.getRowCount(); i++) {
-            int jumlah = Integer.parseInt(modelMenu.getValueAt(i, 4).toString());
-            if (jumlah > 0) {
-                int menuId = Integer.parseInt(modelMenu.getValueAt(i, 0).toString());
-                pstDetail.setInt(1, orderId);
-                pstDetail.setInt(2, menuId);
-                pstDetail.setInt(3, jumlah);
-                pstDetail.addBatch();
-            }
-        }
-        pstDetail.executeBatch();
-        pstDetail.close();
-
-        javax.swing.JOptionPane.showMessageDialog(this, "Pesanan berhasil disimpan!");
-        resetForm();
-
-    } catch (Exception e) {
-        javax.swing.JOptionPane.showMessageDialog(this, "Gagal simpan pesanan: " + e.getMessage());
-    }
+    // Panggil tampilan konfirmasi
+    KonfirmasiPesanan konfirmasi = new KonfirmasiPesanan(this, customerId, customerName, orderList, total);
+    konfirmasi.setVisible(true);
+    this.setVisible(false); // jangan lupa titik koma di sini!
 }
     
     private void loadMenuItems() {
@@ -353,5 +357,6 @@ public class Order extends javax.swing.JFrame {
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JLabel lblTotal;
     private javax.swing.JTable tblMenu;
+    private javax.swing.JButton tblTambahCust;
     // End of variables declaration//GEN-END:variables
 }
