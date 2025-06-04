@@ -4,6 +4,13 @@
  */
 package projectpborestoran;
 
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.Statement;
+import java.sql.SQLException;
+import javax.swing.JOptionPane;
+
 /**
  *
  * @author ASUS Vivobook
@@ -15,7 +22,53 @@ public class TambahMenu extends javax.swing.JFrame {
      */
     public TambahMenu() {
         initComponents();
+        cmbKategori.addItem("Makanan");
+        cmbKategori.addItem("Minuman");
+        cmbKategori.addItem("Lainnya");
+
     }
+    
+    public void tambahMenu() {
+    String nama = txtNamaMenu.getText().trim();
+    String hargaStr = txtHargaMenu.getText().trim();
+    String kategori = cmbKategori.getSelectedItem() != null ? cmbKategori.getSelectedItem().toString() : "";
+
+    // Validasi input
+    if (nama.isEmpty() || hargaStr.isEmpty() || kategori.isEmpty()) {
+        JOptionPane.showMessageDialog(this, "Nama, harga, dan kategori harus diisi!");
+        return;
+    }
+
+    int harga;
+    try {
+        harga = Integer.parseInt(hargaStr);
+    } catch (NumberFormatException e) {
+        JOptionPane.showMessageDialog(this, "Harga harus berupa angka!");
+        return;
+    }
+
+    // Simpan ke database
+    try {
+        Connection conn = koneksi.getConnection();
+        String sql = "INSERT INTO menuitems (name, price, category) VALUES (?, ?, ?)";
+        PreparedStatement pst = conn.prepareStatement(sql);
+        pst.setString(1, nama);
+        pst.setInt(2, harga);
+        pst.setString(3, kategori);
+        pst.executeUpdate();
+        pst.close();
+        JOptionPane.showMessageDialog(this, "Menu berhasil ditambahkan!");
+
+        // Reset field setelah berhasil
+        txtNamaMenu.setText("");
+        txtHargaMenu.setText("");
+        cmbKategori.setSelectedIndex(0);
+    } catch (Exception e) {
+        JOptionPane.showMessageDialog(this, "Gagal menambah menu: " + e.getMessage());
+    }
+}
+
+    
 
     /**
      * This method is called from within the constructor to initialize the form.
@@ -27,18 +80,14 @@ public class TambahMenu extends javax.swing.JFrame {
     private void initComponents() {
 
         jLabel1 = new javax.swing.JLabel();
-        jTextField1 = new javax.swing.JTextField();
+        txtNamaMenu = new javax.swing.JTextField();
         jLabel2 = new javax.swing.JLabel();
         jLabel3 = new javax.swing.JLabel();
         jLabel4 = new javax.swing.JLabel();
-        jLabel5 = new javax.swing.JLabel();
-        jButton1 = new javax.swing.JButton();
-        jButton2 = new javax.swing.JButton();
+        btnSimpan = new javax.swing.JButton();
         jButton3 = new javax.swing.JButton();
-        jTextField2 = new javax.swing.JTextField();
-        jComboBox1 = new javax.swing.JComboBox<>();
-        jScrollPane1 = new javax.swing.JScrollPane();
-        jTextArea1 = new javax.swing.JTextArea();
+        txtHargaMenu = new javax.swing.JTextField();
+        cmbKategori = new javax.swing.JComboBox<>();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
@@ -51,55 +100,42 @@ public class TambahMenu extends javax.swing.JFrame {
 
         jLabel4.setText("Kategori :");
 
-        jLabel5.setText("Deskripsi :");
-
-        jButton1.setText("Simpan");
-
-        jButton2.setText("Reset");
-        jButton2.addActionListener(new java.awt.event.ActionListener() {
+        btnSimpan.setText("Simpan");
+        btnSimpan.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jButton2ActionPerformed(evt);
+                btnSimpanActionPerformed(evt);
             }
         });
 
         jButton3.setText("Kembali");
 
-        jComboBox1.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Item 1", "Item 2", "Item 3", "Item 4" }));
-
-        jTextArea1.setColumns(20);
-        jTextArea1.setRows(5);
-        jScrollPane1.setViewportView(jTextArea1);
-
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
+                .addContainerGap(251, Short.MAX_VALUE)
+                .addComponent(jLabel1, javax.swing.GroupLayout.PREFERRED_SIZE, 135, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(236, 236, 236))
             .addGroup(layout.createSequentialGroup()
-                .addGap(22, 22, 22)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(jLabel5)
                     .addGroup(layout.createSequentialGroup()
+                        .addGap(22, 22, 22)
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addComponent(jLabel2)
                             .addComponent(jLabel3)
                             .addComponent(jLabel4))
                         .addGap(65, 65, 65)
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                            .addGroup(layout.createSequentialGroup()
-                                .addComponent(jButton1)
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 61, Short.MAX_VALUE)
-                                .addComponent(jButton2)
-                                .addGap(51, 51, 51)
-                                .addComponent(jButton3))
-                            .addComponent(jTextField1)
-                            .addComponent(jTextField2)
-                            .addComponent(jComboBox1, javax.swing.GroupLayout.PREFERRED_SIZE, 72, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(jScrollPane1))))
-                .addContainerGap(135, Short.MAX_VALUE))
-            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                .addComponent(jLabel1, javax.swing.GroupLayout.PREFERRED_SIZE, 135, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(236, 236, 236))
+                            .addComponent(txtNamaMenu, javax.swing.GroupLayout.DEFAULT_SIZE, 330, Short.MAX_VALUE)
+                            .addComponent(txtHargaMenu)
+                            .addComponent(cmbKategori, javax.swing.GroupLayout.PREFERRED_SIZE, 100, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                    .addGroup(layout.createSequentialGroup()
+                        .addGap(200, 200, 200)
+                        .addComponent(btnSimpan)
+                        .addGap(67, 67, 67)
+                        .addComponent(jButton3)))
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -108,35 +144,30 @@ public class TambahMenu extends javax.swing.JFrame {
                 .addComponent(jLabel1)
                 .addGap(18, 18, 18)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(jTextField1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(txtNamaMenu, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(jLabel2))
                 .addGap(18, 18, 18)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jLabel3)
-                    .addComponent(jTextField2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addComponent(txtHargaMenu, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addGap(18, 18, 18)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jLabel4)
-                    .addComponent(jComboBox1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addGap(18, 18, 18)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(jLabel5)
-                    .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 76, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addGap(18, 18, 18)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(jButton3)
-                    .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                        .addComponent(jButton1)
-                        .addComponent(jButton2)))
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                    .addComponent(cmbKategori, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addGap(27, 27, 27)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(btnSimpan)
+                    .addComponent(jButton3))
+                .addContainerGap(91, Short.MAX_VALUE))
         );
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
 
-    private void jButton2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton2ActionPerformed
+    private void btnSimpanActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnSimpanActionPerformed
         // TODO add your handling code here:
-    }//GEN-LAST:event_jButton2ActionPerformed
+       tambahMenu();
+    }//GEN-LAST:event_btnSimpanActionPerformed
 
     /**
      * @param args the command line arguments
@@ -174,18 +205,14 @@ public class TambahMenu extends javax.swing.JFrame {
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
-    private javax.swing.JButton jButton1;
-    private javax.swing.JButton jButton2;
+    private javax.swing.JButton btnSimpan;
+    private javax.swing.JComboBox<String> cmbKategori;
     private javax.swing.JButton jButton3;
-    private javax.swing.JComboBox<String> jComboBox1;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel3;
     private javax.swing.JLabel jLabel4;
-    private javax.swing.JLabel jLabel5;
-    private javax.swing.JScrollPane jScrollPane1;
-    private javax.swing.JTextArea jTextArea1;
-    private javax.swing.JTextField jTextField1;
-    private javax.swing.JTextField jTextField2;
+    private javax.swing.JTextField txtHargaMenu;
+    private javax.swing.JTextField txtNamaMenu;
     // End of variables declaration//GEN-END:variables
 }

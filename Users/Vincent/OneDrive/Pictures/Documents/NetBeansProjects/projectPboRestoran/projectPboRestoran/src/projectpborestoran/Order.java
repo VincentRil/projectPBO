@@ -4,17 +4,52 @@
  */
 package projectpborestoran;
 
+import javax.swing.table.DefaultTableModel;
+import java.sql.Connection;
+import java.sql.Statement;
+import java.sql.ResultSet;
+import java.sql.PreparedStatement;
+
+
 /**
  *
  * @author ASUS Vivobook
  */
 public class Order extends javax.swing.JFrame {
+    DefaultTableModel modelMenu;
+
 
     /**
      * Creates new form BisaPesan
      */
     public Order() {
         initComponents();
+        
+        modelMenu = new DefaultTableModel(
+        new Object[][] {},
+        new String[] { "ID", "Nama Menu", "Harga", "Kategori", "Jumlah" }
+          ) {
+    // Hanya kolom Jumlah (ke-4, index 4) yang bisa diedit
+        @Override
+        public boolean isCellEditable(int row, int col) {
+        return col == 4;
+        }
+        @Override
+        public Class<?> getColumnClass(int column) {
+        if (column == 4) return Integer.class; // Jumlah
+        if (column == 0) return Integer.class; // ID
+        if (column == 2) return Integer.class; // Harga
+        return String.class;
+        }
+        };
+        tblMenu.setModel(modelMenu);
+        modelMenu.addTableModelListener(e -> hitungTotal());
+        loadCustomers();
+        loadMenuItems();
+        hitungTotal();
+
+
+
     }
 
     /**
@@ -27,244 +62,249 @@ public class Order extends javax.swing.JFrame {
     private void initComponents() {
 
         jLabel1 = new javax.swing.JLabel();
+        btnSimpan = new javax.swing.JButton();
+        btnKembali = new javax.swing.JButton();
         jLabel2 = new javax.swing.JLabel();
-        jLabel14 = new javax.swing.JLabel();
-        jLabel15 = new javax.swing.JLabel();
-        jLabel16 = new javax.swing.JLabel();
-        jButton5 = new javax.swing.JButton();
-        jButton6 = new javax.swing.JButton();
-        jLabel17 = new javax.swing.JLabel();
-        jLabel18 = new javax.swing.JLabel();
-        jButton7 = new javax.swing.JButton();
-        jCheckBox1 = new javax.swing.JCheckBox();
-        jCheckBox2 = new javax.swing.JCheckBox();
-        jCheckBox3 = new javax.swing.JCheckBox();
-        jCheckBox4 = new javax.swing.JCheckBox();
-        jCheckBox5 = new javax.swing.JCheckBox();
-        jButton1 = new javax.swing.JButton();
-        jButton2 = new javax.swing.JButton();
+        cmbCustomer = new javax.swing.JComboBox<>();
         jLabel3 = new javax.swing.JLabel();
-        jButton3 = new javax.swing.JButton();
-        jLabel4 = new javax.swing.JLabel();
-        jButton4 = new javax.swing.JButton();
-        jButton8 = new javax.swing.JButton();
-        jLabel5 = new javax.swing.JLabel();
-        jButton9 = new javax.swing.JButton();
-        jButton10 = new javax.swing.JButton();
-        jLabel6 = new javax.swing.JLabel();
-        jButton11 = new javax.swing.JButton();
-        jButton12 = new javax.swing.JButton();
-        jLabel7 = new javax.swing.JLabel();
-        jButton13 = new javax.swing.JButton();
+        jScrollPane1 = new javax.swing.JScrollPane();
+        tblMenu = new javax.swing.JTable();
+        btnReset = new javax.swing.JButton();
+        lblTotal = new javax.swing.JLabel();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
         jLabel1.setFont(new java.awt.Font("Segoe UI", 3, 18)); // NOI18N
         jLabel1.setText("Pesan Menu Restoran ASIK");
 
-        jLabel2.setFont(new java.awt.Font("Segoe UI", 1, 12)); // NOI18N
-        jLabel2.setText("Pilih Menu :");
-
-        jLabel14.setText("Rp. 20.000-.");
-
-        jLabel15.setText("Rp. 30.000-,");
-
-        jLabel16.setText("Rp. 10.000-,");
-
-        jButton5.setText("Tambahkan ke keranjang");
-
-        jButton6.setText("Lihat Keranjang");
-
-        jLabel17.setText("Rp. 20.000-,");
-
-        jLabel18.setText("Rp. 35.000-,");
-
-        jButton7.setText("Kembali");
-
-        jCheckBox1.setText("Nasi Goreng");
-
-        jCheckBox2.setText("Soto Ayam");
-
-        jCheckBox3.setText("Sate Ayam");
-
-        jCheckBox4.setText("Es Teh Manis");
-
-        jCheckBox5.setText("Nasi Ayam Bakar");
-        jCheckBox5.addActionListener(new java.awt.event.ActionListener() {
+        btnSimpan.setText("simpan");
+        btnSimpan.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jCheckBox5ActionPerformed(evt);
+                btnSimpanActionPerformed(evt);
             }
         });
 
-        jButton1.setText("-");
+        btnKembali.setText("Kembali");
 
-        jButton2.setText("+");
+        jLabel2.setText("Customer :");
 
-        jLabel3.setText("1");
+        jLabel3.setText("Daftar Menu");
 
-        jButton3.setText("+");
+        tblMenu.setModel(new javax.swing.table.DefaultTableModel(
+            new Object [][] {
+                {null, null, null, null},
+                {null, null, null, null},
+                {null, null, null, null},
+                {null, null, null, null}
+            },
+            new String [] {
+                "Title 1", "Title 2", "Title 3", "Title 4"
+            }
+        ));
+        jScrollPane1.setViewportView(tblMenu);
 
-        jLabel4.setText("2");
-
-        jButton4.setText("-");
-
-        jButton8.setText("+");
-
-        jLabel5.setText("3");
-
-        jButton9.setText("-");
-
-        jButton10.setText("+");
-
-        jLabel6.setText("4");
-
-        jButton11.setText("-");
-        jButton11.addActionListener(new java.awt.event.ActionListener() {
+        btnReset.setText("Reset");
+        btnReset.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jButton11ActionPerformed(evt);
+                btnResetActionPerformed(evt);
             }
         });
 
-        jButton12.setText("+");
-
-        jLabel7.setText("5");
-
-        jButton13.setText("-");
+        lblTotal.setText("Total: ");
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
-                .addGap(32, 32, 32)
-                .addComponent(jButton5)
-                .addGap(18, 18, 18)
-                .addComponent(jButton6)
-                .addGap(18, 18, 18)
-                .addComponent(jButton7)
-                .addContainerGap(111, Short.MAX_VALUE))
-            .addGroup(layout.createSequentialGroup()
-                .addGap(17, 17, 17)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                    .addComponent(jLabel1)
-                    .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                        .addGroup(layout.createSequentialGroup()
-                            .addComponent(jCheckBox1, javax.swing.GroupLayout.PREFERRED_SIZE, 100, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addGap(125, 125, 125)
-                            .addComponent(jLabel14)
-                            .addGap(18, 18, 18)
-                            .addComponent(jButton2)
-                            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                            .addComponent(jLabel3)
-                            .addGap(18, 18, 18)
-                            .addComponent(jButton1))
-                        .addGroup(layout.createSequentialGroup()
-                            .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                .addComponent(jCheckBox2, javax.swing.GroupLayout.PREFERRED_SIZE, 84, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                .addComponent(jCheckBox3, javax.swing.GroupLayout.PREFERRED_SIZE, 84, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                .addComponent(jCheckBox5, javax.swing.GroupLayout.PREFERRED_SIZE, 134, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                .addComponent(jCheckBox4, javax.swing.GroupLayout.PREFERRED_SIZE, 110, javax.swing.GroupLayout.PREFERRED_SIZE))
-                            .addGap(91, 91, 91)
-                            .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                .addGroup(layout.createSequentialGroup()
-                                    .addComponent(jLabel18)
-                                    .addGap(18, 18, 18)
-                                    .addComponent(jButton8)
-                                    .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                    .addComponent(jLabel5)
-                                    .addGap(18, 18, 18)
-                                    .addComponent(jButton9))
-                                .addGroup(layout.createSequentialGroup()
-                                    .addComponent(jLabel17)
-                                    .addGap(18, 18, 18)
-                                    .addComponent(jButton3)
-                                    .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                    .addComponent(jLabel4)
-                                    .addGap(18, 18, 18)
-                                    .addComponent(jButton4))
-                                .addGroup(layout.createSequentialGroup()
-                                    .addComponent(jLabel16)
-                                    .addGap(18, 18, 18)
-                                    .addComponent(jButton10)
-                                    .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                    .addComponent(jLabel6)
-                                    .addGap(18, 18, 18)
-                                    .addComponent(jButton11))
-                                .addGroup(layout.createSequentialGroup()
-                                    .addComponent(jLabel15)
-                                    .addGap(18, 18, 18)
-                                    .addComponent(jButton12)
-                                    .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                    .addComponent(jLabel7)
-                                    .addGap(18, 18, 18)
-                                    .addComponent(jButton13))))
-                        .addComponent(jLabel2)))
+                .addGap(168, 168, 168)
+                .addComponent(jLabel1)
                 .addGap(0, 0, Short.MAX_VALUE))
+            .addGroup(layout.createSequentialGroup()
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(layout.createSequentialGroup()
+                        .addGap(55, 55, 55)
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(jLabel3, javax.swing.GroupLayout.PREFERRED_SIZE, 74, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addGroup(layout.createSequentialGroup()
+                                .addComponent(jLabel2, javax.swing.GroupLayout.PREFERRED_SIZE, 62, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                                .addComponent(cmbCustomer, javax.swing.GroupLayout.PREFERRED_SIZE, 227, javax.swing.GroupLayout.PREFERRED_SIZE))
+                            .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 452, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(lblTotal, javax.swing.GroupLayout.PREFERRED_SIZE, 142, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                    .addGroup(layout.createSequentialGroup()
+                        .addGap(112, 112, 112)
+                        .addComponent(btnSimpan)
+                        .addGap(36, 36, 36)
+                        .addComponent(btnReset)
+                        .addGap(26, 26, 26)
+                        .addComponent(btnKembali)))
+                .addContainerGap(311, Short.MAX_VALUE))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
                 .addGap(17, 17, 17)
                 .addComponent(jLabel1)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(jLabel2)
-                .addGap(18, 18, 18)
+                .addGap(13, 13, 13)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(jLabel14)
-                    .addComponent(jCheckBox1)
-                    .addComponent(jButton2)
-                    .addComponent(jLabel3)
-                    .addComponent(jButton1))
-                .addGap(23, 23, 23)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                    .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                        .addComponent(jLabel17)
-                        .addComponent(jCheckBox2))
-                    .addGroup(layout.createSequentialGroup()
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                            .addComponent(jButton3)
-                            .addComponent(jLabel4)
-                            .addComponent(jButton4))
-                        .addGap(2, 2, 2)))
-                .addGap(16, 16, 16)
+                    .addComponent(jLabel2)
+                    .addComponent(cmbCustomer, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addComponent(jLabel3)
+                .addGap(32, 32, 32)
+                .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 329, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addComponent(lblTotal)
+                .addGap(31, 31, 31)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(jLabel18)
-                    .addComponent(jCheckBox3)
-                    .addComponent(jButton8)
-                    .addComponent(jLabel5)
-                    .addComponent(jButton9))
-                .addGap(18, 18, 18)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(jLabel16)
-                    .addComponent(jCheckBox4)
-                    .addComponent(jButton10)
-                    .addComponent(jLabel6)
-                    .addComponent(jButton11))
-                .addGap(18, 18, 18)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(jLabel15)
-                    .addComponent(jCheckBox5)
-                    .addComponent(jButton12)
-                    .addComponent(jLabel7)
-                    .addComponent(jButton13))
-                .addGap(18, 18, 18)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(jButton5)
-                    .addComponent(jButton6)
-                    .addComponent(jButton7))
-                .addContainerGap(39, Short.MAX_VALUE))
+                    .addComponent(btnSimpan)
+                    .addComponent(btnKembali)
+                    .addComponent(btnReset))
+                .addContainerGap(88, Short.MAX_VALUE))
         );
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
 
-    private void jCheckBox5ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jCheckBox5ActionPerformed
+    private void btnSimpanActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnSimpanActionPerformed
         // TODO add your handling code here:
-    }//GEN-LAST:event_jCheckBox5ActionPerformed
+        simpanPesanan();
+    }//GEN-LAST:event_btnSimpanActionPerformed
 
-    private void jButton11ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton11ActionPerformed
+    private void btnResetActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnResetActionPerformed
         // TODO add your handling code here:
-    }//GEN-LAST:event_jButton11ActionPerformed
+        resetForm();
+    }//GEN-LAST:event_btnResetActionPerformed
+
+    
+    private void hitungTotal() {
+    int total = 0;
+    DefaultTableModel model = (DefaultTableModel) tblMenu.getModel();
+    for (int i = 0; i < model.getRowCount(); i++) {
+        int harga = Integer.parseInt(model.getValueAt(i, 2).toString());     // Kolom Harga
+        int jumlah = 0;
+        // Cegah error jika kolom belum diisi
+        Object val = model.getValueAt(i, 4);
+        if (val != null && !val.toString().isEmpty()) {
+            try {
+                jumlah = Integer.parseInt(val.toString());
+            } catch (NumberFormatException ex) {
+                jumlah = 0;
+            }
+        }
+        total += harga * jumlah;
+    }
+    lblTotal.setText("Rp " + total);
+}
+    
+    private void loadCustomers() {
+    try {
+        Connection conn = koneksi.getConnection();
+        Statement st = conn.createStatement();
+        ResultSet rs = st.executeQuery("SELECT customer_id, name FROM customers");
+        cmbCustomer.removeAllItems();
+        while (rs.next()) {
+            cmbCustomer.addItem(rs.getInt("customer_id") + " - " + rs.getString("name"));
+        }
+    } catch (Exception e) {
+        javax.swing.JOptionPane.showMessageDialog(this, "Gagal load customer: " + e.getMessage());
+    }
+}
+    
+    private void resetForm() {
+    cmbCustomer.setSelectedIndex(0);
+    for (int i = 0; i < modelMenu.getRowCount(); i++) {
+        modelMenu.setValueAt(0, i, 4); // kolom jumlah jadi 0
+    }
+    hitungTotal();
+}
+
+    private void simpanPesanan() {
+    if (cmbCustomer.getSelectedItem() == null) {
+        javax.swing.JOptionPane.showMessageDialog(this, "Pilih customer dulu!");
+        return;
+    }
+
+    int total = 0;
+    for (int i = 0; i < modelMenu.getRowCount(); i++) {
+        int harga = Integer.parseInt(modelMenu.getValueAt(i, 2).toString());
+        int jumlah = 0;
+        Object val = modelMenu.getValueAt(i, 4);
+        if (val != null && !val.toString().isEmpty()) {
+            try { jumlah = Integer.parseInt(val.toString()); } catch (Exception ex) { jumlah = 0; }
+        }
+        total += harga * jumlah;
+    }
+
+    if (total == 0) {
+        javax.swing.JOptionPane.showMessageDialog(this, "Isi jumlah pesanan!");
+        return;
+    }
+
+    // Ambil customer id
+    String selected = cmbCustomer.getSelectedItem().toString();
+    int customerId = Integer.parseInt(selected.split(" - ")[0]);
+    
+    try {
+        Connection conn = koneksi.getConnection();
+        // 1. Insert orders
+        String sqlOrder = "INSERT INTO orders (customer_id, order_date, total) VALUES (?, NOW(), ?)";
+        PreparedStatement pstOrder = conn.prepareStatement(sqlOrder, java.sql.Statement.RETURN_GENERATED_KEYS);
+        pstOrder.setInt(1, customerId);
+        pstOrder.setInt(2, total);
+        pstOrder.executeUpdate();
+        ResultSet rs = pstOrder.getGeneratedKeys();
+        int orderId = 0;
+        if (rs.next()) orderId = rs.getInt(1);
+        pstOrder.close();
+
+        // 2. Insert orderdetails
+        String sqlDetail = "INSERT INTO orderdetails (order_id, item_id, quantity) VALUES (?, ?, ?)";
+        PreparedStatement pstDetail = conn.prepareStatement(sqlDetail);
+        for (int i = 0; i < modelMenu.getRowCount(); i++) {
+            int jumlah = Integer.parseInt(modelMenu.getValueAt(i, 4).toString());
+            if (jumlah > 0) {
+                int menuId = Integer.parseInt(modelMenu.getValueAt(i, 0).toString());
+                pstDetail.setInt(1, orderId);
+                pstDetail.setInt(2, menuId);
+                pstDetail.setInt(3, jumlah);
+                pstDetail.addBatch();
+            }
+        }
+        pstDetail.executeBatch();
+        pstDetail.close();
+
+        javax.swing.JOptionPane.showMessageDialog(this, "Pesanan berhasil disimpan!");
+        resetForm();
+
+    } catch (Exception e) {
+        javax.swing.JOptionPane.showMessageDialog(this, "Gagal simpan pesanan: " + e.getMessage());
+    }
+}
+    
+    private void loadMenuItems() {
+    modelMenu.setRowCount(0); // Bersihkan tabel
+    try {
+        Connection conn = koneksi.getConnection();
+        Statement st = conn.createStatement();
+        ResultSet rs = st.executeQuery("SELECT item_id, name, price, category FROM menuitems");
+        while (rs.next()) {
+            modelMenu.addRow(new Object[]{
+                rs.getInt("item_id"),
+                rs.getString("name"),
+                rs.getInt("price"),
+                rs.getString("category"),
+                0 // jumlah default
+            });
+        }
+    } catch (Exception e) {
+        javax.swing.JOptionPane.showMessageDialog(this, "Gagal load menu: " + e.getMessage());
+    }
+}
+
+
+
 
     /**
      * @param args the command line arguments
@@ -303,35 +343,15 @@ public class Order extends javax.swing.JFrame {
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
-    private javax.swing.JButton jButton1;
-    private javax.swing.JButton jButton10;
-    private javax.swing.JButton jButton11;
-    private javax.swing.JButton jButton12;
-    private javax.swing.JButton jButton13;
-    private javax.swing.JButton jButton2;
-    private javax.swing.JButton jButton3;
-    private javax.swing.JButton jButton4;
-    private javax.swing.JButton jButton5;
-    private javax.swing.JButton jButton6;
-    private javax.swing.JButton jButton7;
-    private javax.swing.JButton jButton8;
-    private javax.swing.JButton jButton9;
-    private javax.swing.JCheckBox jCheckBox1;
-    private javax.swing.JCheckBox jCheckBox2;
-    private javax.swing.JCheckBox jCheckBox3;
-    private javax.swing.JCheckBox jCheckBox4;
-    private javax.swing.JCheckBox jCheckBox5;
+    private javax.swing.JButton btnKembali;
+    private javax.swing.JButton btnReset;
+    private javax.swing.JButton btnSimpan;
+    private javax.swing.JComboBox<String> cmbCustomer;
     private javax.swing.JLabel jLabel1;
-    private javax.swing.JLabel jLabel14;
-    private javax.swing.JLabel jLabel15;
-    private javax.swing.JLabel jLabel16;
-    private javax.swing.JLabel jLabel17;
-    private javax.swing.JLabel jLabel18;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel3;
-    private javax.swing.JLabel jLabel4;
-    private javax.swing.JLabel jLabel5;
-    private javax.swing.JLabel jLabel6;
-    private javax.swing.JLabel jLabel7;
+    private javax.swing.JScrollPane jScrollPane1;
+    private javax.swing.JLabel lblTotal;
+    private javax.swing.JTable tblMenu;
     // End of variables declaration//GEN-END:variables
 }

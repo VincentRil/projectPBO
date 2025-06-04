@@ -8,12 +8,12 @@ package projectpborestoran;
  *
  * @author ASUS Vivobook
  */
-public class BerandaPelanggan extends javax.swing.JFrame {
+public class BerandaAdmin extends javax.swing.JFrame {
 
     /**
      * Creates new form BerandaPelanggan
      */
-    public BerandaPelanggan() {
+    public BerandaAdmin() {
         initComponents();
     }
 
@@ -124,20 +124,21 @@ public class BerandaPelanggan extends javax.swing.JFrame {
                 }
             }
         } catch (ClassNotFoundException ex) {
-            java.util.logging.Logger.getLogger(BerandaPelanggan.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            java.util.logging.Logger.getLogger(BerandaAdmin.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         } catch (InstantiationException ex) {
-            java.util.logging.Logger.getLogger(BerandaPelanggan.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            java.util.logging.Logger.getLogger(BerandaAdmin.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         } catch (IllegalAccessException ex) {
-            java.util.logging.Logger.getLogger(BerandaPelanggan.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            java.util.logging.Logger.getLogger(BerandaAdmin.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         } catch (javax.swing.UnsupportedLookAndFeelException ex) {
-            java.util.logging.Logger.getLogger(BerandaPelanggan.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            java.util.logging.Logger.getLogger(BerandaAdmin.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         }
+        //</editor-fold>
         //</editor-fold>
 
         /* Create and display the form */
         java.awt.EventQueue.invokeLater(new Runnable() {
             public void run() {
-                new BerandaPelanggan().setVisible(true);
+                new BerandaAdmin().setVisible(true);
             }
         });
     }
